@@ -1,1 +1,1 @@
-# qbittorrent_search_plugins
+# qbit_search_plugins
