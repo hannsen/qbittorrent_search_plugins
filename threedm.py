@@ -1,17 +1,27 @@
-#VERSION: 1.01
-#AUTHORS: hoanns
+# VERSION: 1.03
+# AUTHORS: hoanns
 
 
 from html.parser import HTMLParser
 from re import compile as re_compile
 
-#qBt
+# qBt
 from novaprinter import prettyPrinter
 from helpers import download_file, retrieve_url
+
 
 class threedm(object):
     url = "http://bt.3dmgame.com/"
     name = "3dmgame"
+
+    supported_categories = {'all': True,
+                            'music': False,
+                            'movies': False,
+                            'games': True,
+                            'software': True,
+                            'books': False,
+                            'anime': False,
+                            'tv': False}
 
     class Parsar(HTMLParser):
 
@@ -46,7 +56,7 @@ class threedm(object):
             elif self.save_data == "seeds" and tag == "span":
                 self.save_data = "leech"
                 self.handle_that_data = True
-                
+
         def handle_data(self, data):
             if self.handle_that_data:
                 if self.save_data == "name":
@@ -71,17 +81,20 @@ class threedm(object):
                 self.handle_that_data = False
 
     def search(self, what, cat='all'):
+        # if it gets unsupported category, it returns
+        if not self.supported_categories[cat]:
+            return
+
         query = "http://bt.3dmgame.com/search.php?keyword=" + what
         data = retrieve_url(query)
 
         parser = self.Parsar(self.url)
         parser.feed(data)
-        
+
         del data
         return
 
+
 if __name__ == "__main__":
-
     engine = threedm()
-    engine.search('drive')
-
+    engine.search('drive', 'games')
