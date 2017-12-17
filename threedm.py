@@ -1,15 +1,19 @@
-# VERSION: 1.03
-# AUTHORS: hoanns
+#VERSION: 1.03
+#AUTHORS: hoanns
 
 
-from html.parser import HTMLParser
+try:
+    from HTMLParser import HTMLParser
+except ImportError:
+    from html.parser import HTMLParser
+
 from re import compile as re_compile
-
 # qBt
 from novaprinter import prettyPrinter
-from helpers import download_file, retrieve_url
+from helpers import retrieve_url
 
 
+# noinspection PyPep8Naming
 class threedm(object):
     url = "http://bt.3dmgame.com/"
     name = "3dmgame"
@@ -20,7 +24,6 @@ class threedm(object):
                             'games': True,
                             'software': True,
                             'books': False,
-                            'anime': False,
                             'tv': False}
 
     class Parsar(HTMLParser):
