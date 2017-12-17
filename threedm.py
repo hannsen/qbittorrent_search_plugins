@@ -1,6 +1,7 @@
-#VERSION: 1.03
+#VERSION: 1.04
 #AUTHORS: hoanns
-
+# This thing is pretty straight forward.
+# Beware that they sometimes upload uncracked games on here.
 
 try:
     from HTMLParser import HTMLParser
@@ -70,6 +71,7 @@ class threedm(object):
                     self.current_item[self.save_data] = data
                 # all data collected
                 if self.current_item.__len__() == 7:
+                    # remove preceding whitespaces
                     self.current_item["name"] = self.name_repl.sub("", self.current_item["name"])
                     prettyPrinter(self.current_item)
                     self.current_item = None
@@ -100,4 +102,4 @@ class threedm(object):
 
 if __name__ == "__main__":
     engine = threedm()
-    engine.search('drive', 'games')
+    engine.search('Handball.17', 'games')
