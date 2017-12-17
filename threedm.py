@@ -1,5 +1,6 @@
 #VERSION: 1.04
 #AUTHORS: hoanns
+# Chinese Gaming Tracker
 # This thing is pretty straight forward.
 # Beware that they sometimes upload uncracked games on here.
 
@@ -8,9 +9,11 @@ try:
 except ImportError:
     from html.parser import HTMLParser
 
-from re import compile as re_compile
+import re
 # qBt
+# noinspection PyUnresolvedReferences
 from novaprinter import prettyPrinter
+# noinspection PyUnresolvedReferences
 from helpers import retrieve_url
 
 
@@ -35,7 +38,7 @@ class threedm(object):
             self.current_item = None
             self.save_data = None
             self.handle_that_data = False
-            self.name_repl = re_compile("^\s*")
+            self.name_repl = re.compile("^\s*")
 
         def handle_starttag(self, tag, attrs):
             if tag == "a":
