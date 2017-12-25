@@ -85,9 +85,6 @@ class threedm(object):
                 self.handle_that_data = False
 
     def search(self, what, cat='all'):
-        # if it gets unsupported category, it returns
-        if not self.supported_categories[cat]:
-            return
 
         query = "http://bt.3dmgame.com/search.php?keyword=" + what
         data = retrieve_url(query)

@@ -50,9 +50,6 @@ class smallgames(object):
             print(path + " " + url)
 
     def search(self, what, cat='all'):
-        # if it gets unsupported category, it returns
-        if not self.supported_categories[cat]:
-            return
 
         query = "http://small-games.info/?go=search&go=search&search_text=" + what
         data = retrieve_url(query)
