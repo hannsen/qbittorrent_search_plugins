@@ -14,7 +14,7 @@ looking for more torrent sites
 
   Beware that they sometimes upload uncracked games on here.
 
-## smallgames.info : smallgames.py
+## small-games.info : smallgames.py
   Russian Gaming Website
   Not all results return a torrent file.
   Click description button to see the game page for it.
