@@ -23,12 +23,8 @@ class threedm(object):
     name = "3dmgame"
 
     supported_categories = {'all': True,
-                            'music': False,
-                            'movies': False,
                             'games': True,
-                            'software': True,
-                            'books': False,
-                            'tv': False}
+                            'software': True}
 
     class Parsar(HTMLParser):
 

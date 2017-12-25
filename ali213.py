@@ -27,12 +27,8 @@ class ali213(object):
         '<span class="text">(.{2,7})</span></div><a href="/pcgame/(.*?)" target="_blank" class="list_body_con_down">')
 
     supported_categories = {'all': True,
-                            'music': False,
-                            'movies': False,
                             'games': True,
-                            'software': True,
-                            'books': False,
-                            'tv': False}
+                            'software': True}
 
     first_dl_site = "http://www.soft50.com/"
     final_dl_site = "http://btfile.soft5566.com/y/"

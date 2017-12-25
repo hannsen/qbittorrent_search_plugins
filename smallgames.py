@@ -27,12 +27,7 @@ class smallgames(object):
         'engine_url': url
     }
     supported_categories = {'all': True,
-                            'music': False,
-                            'movies': False,
-                            'games': True,
-                            'software': False,
-                            'books': False,
-                            'tv': False}
+                            'games': True}
 
     def download_torrent(self, url):
         file, path = tempfile.mkstemp('.torrent')
