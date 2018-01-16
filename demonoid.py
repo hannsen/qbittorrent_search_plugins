@@ -1,6 +1,6 @@
-#VERSION: 1.25
-#AUTHORS: Douman (custparasite@gmx.se)
-#CONTRIBUTORS: Diego de las Heras (ngosang@hotmail.es)
+# VERSION: 1.25
+# AUTHORS: Douman (custparasite@gmx.se)
+# CONTRIBUTORS: Diego de las Heras (ngosang@hotmail.es)
 #              hannsen (github.com/hannsen)
 
 # Redistribution and use in source and binary forms, with or without
@@ -121,9 +121,9 @@ class demonoid(object):
             if self.save_data == "name":
                 self.save_data = None
 
-    def handle_gamepage(self, search_query):
-        parser = self.MyHtmlParseWithBlackJack(self.url)
+    def handle_page(self, search_query):
         response = retrieve_url(self.url + search_query)
+        parser = self.MyHtmlParseWithBlackJack(self.url)
         parser.feed(self.torrent_list.search(response).group(0))
         parser.close()
 
@@ -135,11 +135,8 @@ class demonoid(object):
                          what, "&to=1&uid=0&sort=S"))
 
         data = retrieve_url(query)
-
         add_res_list = re_compile("/files.*page=[0-9]+")
-
         data = self.torrent_list.search(data).group(0)
-
         list_results = add_res_list.findall(data)
 
         parser = self.MyHtmlParseWithBlackJack(self.url)
@@ -154,7 +151,7 @@ class demonoid(object):
             search_queries = islice(
                 (add_res_list.search(result).group(0) for result in list_results[1].split(" | ")), 0, 10)
             for search_query in search_queries:
-                t = threading.Thread(target=self.handle_gamepage, args=(search_query,))
+                t = threading.Thread(target=self.handle_page, args=(search_query,))
                 threads.append(t)
                 t.start()
 
@@ -166,6 +163,7 @@ class demonoid(object):
 
 if __name__ == "__main__":
     import time
+
     start_time = time.clock()
     engine = demonoid()
     engine.search('drive')
