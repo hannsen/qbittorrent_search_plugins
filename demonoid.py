@@ -1,4 +1,4 @@
-#VERSION: 1.24
+#VERSION: 1.25
 #AUTHORS: Douman (custparasite@gmx.se)
 #CONTRIBUTORS: Diego de las Heras (ngosang@hotmail.es)
 #              hannsen (github.com/hannsen)
@@ -27,6 +27,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import threading
 from html.parser import HTMLParser
 from re import compile as re_compile
 from re import DOTALL
@@ -48,6 +49,7 @@ class demonoid(object):
                             'books': '11',
                             'anime': '9',
                             'tv': '3'}
+    torrent_list = re_compile("<tr align=\"right\" id=\"topppp\">(.*)<tr align=\"right\" id=\"topppp\">", DOTALL)
 
     def download_torrent(self, info):
         """ Downloader """
@@ -119,6 +121,12 @@ class demonoid(object):
             if self.save_data == "name":
                 self.save_data = None
 
+    def handle_gamepage(self, search_query):
+        parser = self.MyHtmlParseWithBlackJack(self.url)
+        response = retrieve_url(self.url + search_query)
+        parser.feed(self.torrent_list.search(response).group(0))
+        parser.close()
+
     def search(self, what, cat='all'):
         """ Performs search """
         # prepare query
@@ -129,8 +137,8 @@ class demonoid(object):
         data = retrieve_url(query)
 
         add_res_list = re_compile("/files.*page=[0-9]+")
-        torrent_list = re_compile("<tr align=\"right\" id=\"topppp\">(.*)<tr align=\"right\" id=\"topppp\">", DOTALL)
-        data = torrent_list.search(data).group(0)
+
+        data = self.torrent_list.search(data).group(0)
 
         list_results = add_res_list.findall(data)
 
@@ -140,10 +148,25 @@ class demonoid(object):
         del data
 
         if list_results:
-            for search_query in islice(
-                    (add_res_list.search(result).group(0) for result in list_results[1].split(" | ")), 0, 5):
-                response = retrieve_url(self.url + search_query)
-                parser.feed(torrent_list.search(response).group(0))
-                parser.close()
+            # handling each gamepage in parallel, to not waste time on waiting for requests
+            # for 10 pages this speeds up from  6.5s to  1.9s run time
+            threads = []
+            search_queries = islice(
+                (add_res_list.search(result).group(0) for result in list_results[1].split(" | ")), 0, 10)
+            for search_query in search_queries:
+                t = threading.Thread(target=self.handle_gamepage, args=(search_query,))
+                threads.append(t)
+                t.start()
 
+            # search method needs to stay alive until all threads are done
+            for t in threads:
+                t.join()
         return
+
+
+if __name__ == "__main__":
+    import time
+    start_time = time.clock()
+    engine = demonoid()
+    engine.search('drive')
+    print(time.clock() - start_time, "seconds")
