@@ -2,6 +2,7 @@
 
 # qbit_search_plugins
 Don't blame me if these run slow, it has to use chinese servers
+
 looking for more torrent sites
 
 ## ali213.net : ali213.py
@@ -18,6 +19,7 @@ looking for more torrent sites
 
 ## small-games.info : smallgames.py
   Russian Gaming Website
+  
   Not all results return a torrent file.
   Click description button to see the game page for it.
   If there is a mediaget button, you can add &direct=1
