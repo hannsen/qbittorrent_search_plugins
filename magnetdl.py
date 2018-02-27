@@ -13,13 +13,11 @@ from helpers import retrieve_url
 class magnetdl(object):
     url = "http://www.magnetdl.com/"
     name = "MagnetDL"
-    games_to_parse = 10
     result_page_match = re.compile(
         '<td\sclass="m"><a\shref="(magnet.*?)"\stitle=".*?class="n"><a\shref="(.*?)"\stitle="(.*?)">.*?<td\sclass="t5">.*?</td><td>.*?</td><td>(.*?)</td><td\sclass="s">(.*?)</td><td\sclass="l">(.*?)</td>')
 
     def search(self, what, cat='all'):
         query = self.url + what[:1] + '/' + what
-        print(query)
         data = retrieve_url(query)
         results = re.findall(self.result_page_match, data)
 
