@@ -1,4 +1,4 @@
-#VERSION: 1.00
+#VERSION: 1.1
 #AUTHORS: hoanns
 # movie and tv show site
 # Will only parse the first search result site, sorry
@@ -25,9 +25,15 @@ class mkvcage(object):
     def handle_page(self, url):
         data = retrieve_url(url)
         size_match = re.compile('<strong>File\sSize:</strong>\s(.*?)(<br|\n)')
-        size = size_match.findall(data)[0][0]
-        dl_match = re.compile('<a\sclass="buttn\storrent"\shref="http://www.mkvcage.com/torrents/(.*?)"')
-        dl = dl_match.findall(data)[0]
+        try:
+            size = size_match.findall(data)[0][0]
+        except IndexError:
+            size = -1
+        try:
+            dl_match = re.compile('<a\sclass="buttn\storrent"\shref="http://www.mkvcage.com/torrents/(.*?)"')
+            dl = dl_match.findall(data)[0]
+        except IndexError:
+            return
         result = {
             'name': dl,
             'size': size,
@@ -67,4 +73,4 @@ class mkvcage(object):
 
 if __name__ == "__main__":
     engine = mkvcage()
-    engine.search('fire', 'movie')
+    engine.search('movie')
