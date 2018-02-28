@@ -1,4 +1,4 @@
-#VERSION: 1.1
+#VERSION: 1.2
 #AUTHORS: hoanns
 # magnetdl.com
 # only first page atm
@@ -28,7 +28,7 @@ class magnetdl(object):
                 'name': result[2],
                 'size': result[3],
                 'link': result[0],
-                'desc_link': self.url[1:] + result[1],
+                'desc_link': self.url[:-1] + result[1],
                 'seeds': result[4],
                 'leech': result[5],
                 'engine_url': self.url
