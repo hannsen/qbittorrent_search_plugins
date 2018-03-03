@@ -1,8 +1,9 @@
-# VERSION: 1.2
-# AUTHORS: hoanns
-# magnetdl.com
+#VERSION: 1.0
+#AUTHORS: hoanns
+# snowfl.com
 # only first page atm
 
+import base64
 import json
 import random
 import re
@@ -19,33 +20,40 @@ class snowfl(object):
     name = "snowfl"
     bak_match = re.compile('bak64="(.*?)"')
 
-    def randStr(self):
-        return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))
+    def download_torrent(self, url):
+        urls = url.split('~')
+        urls[0] = base64.b64encode((urls[0].encode())).decode()
+        query = self.url + '/' + urls[2] + '/link/' + urls[1] + '/' + urls[0] + '?_=' + str(int(time.time() * 1000))
+        data = json.loads(retrieve_url(query))
+        print(data['url'] + ' ' + url)
+
+    def randStr(self, N):
+        return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(N))
 
     def search(self, what, cat='all'):
         script = retrieve_url(self.url + '/main.min.js')
         bak = re.findall(self.bak_match, script)[0]
-        print(bak)
-        query = self.url + '/' + bak + "/search/" + what + "/" + self.randStr() + "/0/SEED/NONE/1?_=" + str(int(time.time() * 1000))
-        print(query)
+        query = self.url + '/' + bak + "/search/" + what + "/" + self.randStr(8) + "/0/SEED/NONE/1?_=" + str(int(time.time() * 1000))
         results = json.loads(retrieve_url(query))
-        print(results[100])
 
-        # for result in results:
-        #     temp_result = {
-        #         'name': result[2],
-        #         'size': result[3],
-        #         'link': result[0],
-        #         'desc_link': self.url[:-1] + result[1],
-        #         'seeds': result[4],
-        #         'leech': result[5],
-        #         'engine_url': self.url
-        #     }
-        #     prettyPrinter(temp_result)
+        for result in results:
+            temp_result = {
+                'name': result['title'],
+                'size': result['size'],
+                'desc_link': result['pageLink'],
+                'seeds': result['seed'],
+                'leech': result['leech'],
+                'engine_url': self.url
+            }
+            try:
+                temp_result['link'] = result['magnetLink']
+            except KeyError:
+                temp_result['link'] = result['pageLink'] + '~' + result['source'] + '~' + bak
+            prettyPrinter(temp_result)
 
         return
 
 
 if __name__ == "__main__":
     engine = snowfl()
-    engine.search('fire')
+    # engine.search('fire')
