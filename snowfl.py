@@ -18,7 +18,7 @@ from helpers import retrieve_url
 class snowfl(object):
     url = "https://snowfl.com"
     name = "snowfl"
-    bak_match = re.compile('bak64="(.*?)"')
+    var_match = re.compile('"/"\+(.*?)\+"/search/"')
 
     def download_torrent(self, url):
         urls = url.split('~')
@@ -32,7 +32,9 @@ class snowfl(object):
 
     def search(self, what, cat='all'):
         script = retrieve_url(self.url + '/main.min.js')
-        bak = re.findall(self.bak_match, script)[0]
+        var_name =re.findall(self.var_match, script)[0]
+        bak_match = re.compile(var_name + '="(.*?)"')
+        bak = re.findall(bak_match, script)[0]
         query = self.url + '/' + bak + "/search/" + what + "/" + self.randStr(8) + "/0/SEED/NONE/1?_=" + str(int(time.time() * 1000))
         results = json.loads(retrieve_url(query))
 
@@ -56,4 +58,4 @@ class snowfl(object):
 
 if __name__ == "__main__":
     engine = snowfl()
-    # engine.search('fire')
+    engine.search('fire')
