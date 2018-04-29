@@ -73,4 +73,4 @@ class mkvcage(object):
 
 if __name__ == "__main__":
     engine = mkvcage()
-    engine.search('movie')
+    engine.search('fire')

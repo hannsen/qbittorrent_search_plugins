@@ -1,5 +1,5 @@
-# VERSION: 1.25
-# AUTHORS: Douman (custparasite@gmx.se)
+#VERSION: 1.3
+#AUTHORS: Douman (custparasite@gmx.se)
 # CONTRIBUTORS: Diego de las Heras (ngosang@hotmail.es)
 #              hannsen (github.com/hannsen)
 
@@ -61,7 +61,7 @@ class demonoid(object):
         def __init__(self, url):
             HTMLParser.__init__(self)
             self.url = url
-            self.current_item = None
+            self.current_item = dict()
             self.save_data = None
             self.seeds_leech = False
             self.size_repl = re_compile(",")
@@ -72,8 +72,7 @@ class demonoid(object):
                 params = dict(attrs)
                 if "href" in params:
                     link = params["href"]
-                    if link.startswith("/files/details"):
-                        self.current_item = dict()
+                    if link.startswith("/genlb.php?genidx="):
                         self.current_item["desc_link"] = "".join((self.url, link))
                         self.current_item["engine_url"] = self.url
                         self.save_data = "name"
@@ -114,7 +113,7 @@ class demonoid(object):
                 if self.current_item.__len__() == 7:
                     self.current_item["size"] = self.size_repl.sub("", self.current_item["size"])
                     prettyPrinter(self.current_item)
-                    self.current_item = None
+                    self.current_item = dict()
 
         def handle_endtag(self, tag):
             """ Parser's end tag handler """
