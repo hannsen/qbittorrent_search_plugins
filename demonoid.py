@@ -1,4 +1,4 @@
-#VERSION: 1.3
+#VERSION: 1.5
 #AUTHORS: Douman (custparasite@gmx.se)
 # CONTRIBUTORS: Diego de las Heras (ngosang@hotmail.es)
 #              hannsen (github.com/hannsen)
@@ -28,10 +28,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import threading
-from html.parser import HTMLParser
 from re import compile as re_compile
 from re import DOTALL
 from itertools import islice
+
+try:
+    from html.parser import HTMLParser
+except ImportError:
+    from HTMLParser import HTMLParser
 # qBt
 from novaprinter import prettyPrinter
 from helpers import download_file, retrieve_url
@@ -135,7 +139,20 @@ class demonoid(object):
 
         data = retrieve_url(query)
         add_res_list = re_compile("/files.*page=[0-9]+")
-        data = self.torrent_list.search(data).group(0)
+        try:
+            data = self.torrent_list.search(data).group(0)
+        except AttributeError:
+            if 'You must be logged in to to that!' in data:
+                prettyPrinter({
+                    'seeds': -1,
+                    'size': -1,
+                    'leech': -1,
+                    'engine_url': self.url,
+                    'link': self.url,
+                    'desc_link': query,
+                    'name': 'It seems demonoid.pw is private at the moment. / ' + what
+                })
+            return
         list_results = add_res_list.findall(data)
 
         parser = self.MyHtmlParseWithBlackJack(self.url)
@@ -161,9 +178,5 @@ class demonoid(object):
 
 
 if __name__ == "__main__":
-    import time
-
-    start_time = time.clock()
     engine = demonoid()
     engine.search('drive')
-    print(time.clock() - start_time, "seconds")
