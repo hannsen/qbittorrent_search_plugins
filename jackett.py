@@ -1,4 +1,4 @@
-#VERSION: 1.0
+#VERSION: 1.01
 #AUTHORS: ukharley
 #         hannsen (github.com/hannsen)
 #
@@ -36,6 +36,7 @@ class jackett(object):
     }
 
     def search(self, what, cat='all'):
+        what = unquote(what)
         cat = cat.lower()
         base_url = self.url + "/api/v2.0/indexers/all/results?%s"
         category = self.supported_categories[cat]
