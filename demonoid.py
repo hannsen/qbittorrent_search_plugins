@@ -1,4 +1,4 @@
-#VERSION: 1.5
+#VERSION: 2.0
 #AUTHORS: Douman (custparasite@gmx.se)
 # CONTRIBUTORS: Diego de las Heras (ngosang@hotmail.es)
 #              hannsen (github.com/hannsen)
@@ -55,9 +55,12 @@ class demonoid(object):
                             'tv': '3'}
     torrent_list = re_compile("<tr align=\"right\" id=\"topppp\">(.*)<tr align=\"right\" id=\"topppp\">", DOTALL)
 
-    def download_torrent(self, info):
+    def download_torrent(self, desc_link):
         """ Downloader """
-        print(download_file(info))
+        dl_link = re_compile("https://www\.hypercache\.pw/metadata/.+?/")
+        data = retrieve_url(desc_link)
+        dl_url = dl_link.findall(data)[0]
+        print(download_file(dl_url))
 
     class MyHtmlParseWithBlackJack(HTMLParser):
         """ Parser class """
@@ -78,10 +81,9 @@ class demonoid(object):
                     link = params["href"]
                     if link.startswith("/genlb.php?genidx="):
                         self.current_item["desc_link"] = "".join((self.url, link))
+                        self.current_item["link"] = "".join((self.url, link))
                         self.current_item["engine_url"] = self.url
                         self.save_data = "name"
-                    elif link.startswith("https://www.hypercache.pw/metadata/"):
-                        self.current_item["link"] = link
 
             elif self.current_item:
                 if tag == "td":
