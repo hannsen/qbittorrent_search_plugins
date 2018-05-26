@@ -1,4 +1,4 @@
-#VERSION: 1.01
+#VERSION: 1.02
 #AUTHORS: ukharley
 #         hannsen (github.com/hannsen)
 #
@@ -57,7 +57,7 @@ class jackett(object):
                 size='%d B' % i['Size'],
                 seeds=i['Seeders'],
                 leech=i['Peers'],
-                engine_url=self.url,
+                engine_url="http://" + i['Tracker'],
                 desc_link=i['Comments'])
 
             if i['MagnetUri']:
