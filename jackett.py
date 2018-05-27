@@ -1,4 +1,4 @@
-#VERSION: 1.02
+#VERSION: 1.03
 #AUTHORS: ukharley
 #         hannsen (github.com/hannsen)
 #
@@ -53,11 +53,11 @@ class jackett(object):
         j = json.loads(response)
         for i in j['Results']:
             res = dict(
-                name=i['Title'],
+                name='%s [%s]' % (i['Title'], i['Tracker']),
                 size='%d B' % i['Size'],
                 seeds=i['Seeders'],
                 leech=i['Peers'],
-                engine_url="http://" + i['Tracker'],
+                engine_url=self.url,
                 desc_link=i['Comments'])
 
             if i['MagnetUri']:
