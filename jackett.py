@@ -1,8 +1,8 @@
-#VERSION: 1.03
+#VERSION: 1.04
 #AUTHORS: ukharley
 #         hannsen (github.com/hannsen)
 #
-#         Make sure to change your api key below
+#         (Optional) Change your api key below
 
 user_data = {
     'url': 'http://127.0.0.1:9117',  # default, change to yours if different
@@ -10,7 +10,7 @@ user_data = {
 }
 
 from novaprinter import prettyPrinter
-from helpers import retrieve_url, download_file
+from helpers import retrieve_url
 import json
 
 try:
@@ -24,6 +24,7 @@ except ImportError:
 class jackett(object):
     """Generic provider for Torznab compatible api."""
 
+    what = ""
     name = 'Jackett(torznab)'
     url = user_data['url']
     api_key = user_data['api_key']
@@ -37,9 +38,15 @@ class jackett(object):
 
     def search(self, what, cat='all'):
         what = unquote(what)
+        self.what = what
         cat = cat.lower()
         base_url = self.url + "/api/v2.0/indexers/all/results?%s"
         category = self.supported_categories[cat]
+
+        # user did not change api_key, trying to get from config
+        if self.api_key == "YOUR_API_KEY_HERE":
+            response = self.get_response(self.url + "/api/v2.0/server/config")
+            self.api_key = json.loads(response)['api_key']
 
         params = {
             'apikey': self.api_key,
@@ -49,7 +56,7 @@ class jackett(object):
             params['Category[]'] = category
         params = urlencode(params)
 
-        response = retrieve_url(base_url % params)
+        response = self.get_response(base_url % params)
         j = json.loads(response)
         for i in j['Results']:
             res = dict(
@@ -66,6 +73,25 @@ class jackett(object):
                 res['link'] = i['Link']
 
             prettyPrinter(res)
+
+    def get_response(self, query):
+        response = retrieve_url(query)
+        if response == "":
+            self.handle_error()
+            quit()
+        return response
+
+    def handle_error(self):
+        error_msg = "Failure to connect to Jackett server! Please check API Key and URL / "
+        prettyPrinter({
+            'seeds': -1,
+            'size': -1,
+            'leech': -1,
+            'engine_url': self.url,
+            'link': self.url,
+            'desc_link': self.url,
+            'name': error_msg + self.what
+        })
 
 
 if __name__ == "__main__":

@@ -22,8 +22,9 @@ looking for more torrent sites
   Search engine for a wide range of trackers
 
   *  You will need to have the jackett service installed and running.
-  *  Also you will need to replace `YOUR_API_KEY_HERE` with your own in the `jackett.py` file
-      * Your api key is written under `Adding a Jackett indexer in Sonarr or Radarr` 
+  *  The plugin tries to get your api key automatically, if that fails:
+      * you will need to replace `YOUR_API_KEY_HERE` with your own in the `jackett.py` file
+      * Your api key is written under the `Adding a Jackett indexer in Sonarr or Radarr` section
   * If your jackett does not run under `http://127.0.0.1:9117` you will need to change that as well
 
 ## small-games.info : smallgames.py
