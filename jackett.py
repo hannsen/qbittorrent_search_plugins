@@ -38,7 +38,7 @@ class jackett(object):
         'movies': ['2000'],
         'music': ['3000'],
         'tv': ['5000'],
-        'books': '[8000]'
+        'books': ['8000']
     }
 
     def search(self, what, cat='all'):
