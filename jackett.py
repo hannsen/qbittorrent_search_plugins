@@ -1,4 +1,4 @@
-#VERSION: 1.04
+#VERSION: 1.05
 #AUTHORS: ukharley
 #         hannsen (github.com/hannsen)
 #
@@ -9,18 +9,22 @@ user_data = {
     'api_key': 'YOUR_API_KEY_HERE',  # add your api key
 }
 
-from novaprinter import prettyPrinter
-from helpers import retrieve_url
 import json
+from novaprinter import prettyPrinter
 
 try:
     # python2
     from urllib import urlencode, quote, unquote
+    import urllib2 as urllib_request
+    from urllib2 import HTTPError as HTTP_Error
 except ImportError:
     # python3
     from urllib.parse import urlencode, quote, unquote
+    from urllib import request as urllib_request
+    from urllib.error import HTTPError as HTTP_Error
 
 
+# noinspection PyPep8Naming
 class jackett(object):
     """Generic provider for Torznab compatible api."""
 
@@ -75,10 +79,12 @@ class jackett(object):
             prettyPrinter(res)
 
     def get_response(self, query):
-        response = retrieve_url(query)
-        if response == "":
+        try:
+            response = urllib_request.urlopen(query).read()
+        except HTTP_Error:
             self.handle_error()
             quit()
+        # noinspection PyUnboundLocalVariable
         return response
 
     def handle_error(self):
