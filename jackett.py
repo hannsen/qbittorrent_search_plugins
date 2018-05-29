@@ -1,4 +1,4 @@
-#VERSION: 1.05
+#VERSION: 1.06
 #AUTHORS: ukharley
 #         hannsen (github.com/hannsen)
 #
@@ -33,11 +33,12 @@ class jackett(object):
     url = user_data['url']
     api_key = user_data['api_key']
     supported_categories = {
-        'all': '',
-        'movies': '2000',
-        'tv': '5000',
-        'music': '3000',
-        'books': '8000'
+        'all': None,
+        'games': ['1000', '4000'],
+        'movies': ['2000'],
+        'music': ['3000'],
+        'tv': ['5000'],
+        'books': '[8000]'
     }
 
     def search(self, what, cat='all'):
@@ -52,12 +53,13 @@ class jackett(object):
             response = self.get_response(self.url + "/api/v2.0/server/config")
             self.api_key = json.loads(response)['api_key']
 
-        params = {
-            'apikey': self.api_key,
-            'Query': what
-        }
-        if category != '':
-            params['Category[]'] = category
+        params = [
+            ('apikey', self.api_key),
+            ('Query', what)
+        ]
+        if category:
+            for cat_id in category:
+                params.append(('Category[]', cat_id))
         params = urlencode(params)
 
         response = self.get_response(base_url % params)
