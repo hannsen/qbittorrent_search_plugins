@@ -1,4 +1,4 @@
-#VERSION: 1.06
+#VERSION: 1.07
 #AUTHORS: ukharley
 #         hannsen (github.com/hannsen)
 #
@@ -7,6 +7,7 @@
 user_data = {
     'url': 'http://127.0.0.1:9117',  # default, change to yours if different
     'api_key': 'YOUR_API_KEY_HERE',  # add your api key
+    'tracker_first': False,  # (False/True) Add tracker name to beginning of search result
 }
 
 import json
@@ -66,12 +67,16 @@ class jackett(object):
         j = json.loads(response)
         for i in j['Results']:
             res = dict(
-                name='%s [%s]' % (i['Title'], i['Tracker']),
                 size='%d B' % i['Size'],
                 seeds=i['Seeders'],
                 leech=i['Peers'],
                 engine_url=self.url,
                 desc_link=i['Comments'])
+
+            if user_data['tracker_first']:
+                res['name'] = '[%s] %s' % (i['Tracker'], i['Title'])
+            else:
+                res['name'] = '%s [%s]' % (i['Title'], i['Tracker'])
 
             if i['MagnetUri']:
                 res['link'] = i['MagnetUri']
