@@ -2,3 +2,4 @@
 venv/
 lib/
 testing/
+*cookie.json
