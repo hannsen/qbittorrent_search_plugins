@@ -1,6 +1,8 @@
 # VERSION: 0.1
 # AUTHORS: hoanns
-
+# getigg.js needs to be in nova2.py folder
+# python 3 only
+# phantomjs needs to be installed and in path
 
 import re
 import subprocess
