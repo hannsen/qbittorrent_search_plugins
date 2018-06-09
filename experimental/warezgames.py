@@ -3,7 +3,6 @@
 
 
 import re
-import requests
 import subprocess
 
 from novaprinter import prettyPrinter
@@ -25,27 +24,32 @@ class warezgames(object):
         process = subprocess.Popen(['phantomjs.exe', 'getigg.js', what], stdout=subprocess.PIPE, shell=True)
         out, err = process.communicate()
         igg_data = out.decode('utf-8')
+        igg_match = re.compile("<a\shref=\"(.*?)\"\s.*?rel=\"bookmark\".*?>(.*?)</a>")
 
         csrin_query = "https://cs.rin.ru/forum/search.php?keywords=" + what + "&terms=all&author=&sc=1&sf=titleonly&sk=t&sd=d&sr=topics&st=0&ch=300&t=0"
         csrin_data = retrieve_url(csrin_query)
+        csrin_match = re.compile("<a\shref=\"(.*?)\"\sclass=\"topictitle\".*>(.*?)</a>")
 
-        # results = re.findall(self.result_page_match, data)
-        #
-        # for result in results:
-        #     temp_result = {
-        #         'name': result[2],
-        #         'size': result[3],
-        #         'link': result[0],
-        #         'desc_link': self.url[:-1] + result[1],
-        #         'seeds': result[4],
-        #         'leech': result[5],
-        #         'engine_url': self.url
-        #     }
-        #     prettyPrinter(temp_result)
-        #
-        # return
+        cs_results = re.findall(csrin_match, csrin_data)
+        igg_results = re.findall(igg_match, igg_data)
+
+        for i in igg_results:
+            self.printName(i[1] + " [IGG]", i[0])
+        for i in cs_results:
+            self.printName(i[1] + " [cs_rin]", "https://cs.rin.ru/forum" + i[0][1:])
+
+    def printName(self, name, link):
+        prettyPrinter({
+            'name': name,
+            'size': -1,
+            'link': link,
+            'desc_link': link,
+            'seeds': -1,
+            'leech': -1,
+            'engine_url': self.url
+        })
 
 
 if __name__ == "__main__":
     engine = warezgames()
-    engine.search('isaac binding')
+    engine.search('isaac')
