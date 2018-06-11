@@ -1,4 +1,4 @@
-# VERSION: 0.1
+# VERSION: 0.2
 # AUTHORS: hoanns
 # getigg.js needs to be in nova2.py folder
 # doesnt work with qbit tho, only made to use with nova2.py
@@ -27,19 +27,25 @@ class warezgames(object):
         process = subprocess.Popen(['phantomjs.exe', 'getigg.js', what], stdout=subprocess.PIPE, shell=True)
         out, err = process.communicate()
         igg_data = out.decode('utf-8')
-        igg_match = re.compile("<a\shref=\"(.*?)\"\s.*?rel=\"bookmark\".*?>(.*?)</a>")
+        igg_match = re.compile('<a\shref="(.*?)"\s.*?rel="bookmark".*?>(.*?)</a>')
+        igg_results = re.findall(igg_match, igg_data)
 
         csrin_query = "https://cs.rin.ru/forum/search.php?keywords=" + what + "&terms=all&author=&sc=1&sf=titleonly&sk=t&sd=d&sr=topics&st=0&ch=300&t=0"
         csrin_data = retrieve_url(csrin_query)
-        csrin_match = re.compile("<a\shref=\"(.*?)\"\sclass=\"topictitle\".*>(.*?)</a>")
-
+        csrin_match = re.compile('<a\shref="(.*?)"\sclass="topictitle".*>(.*?)</a>')
         cs_results = re.findall(csrin_match, csrin_data)
-        igg_results = re.findall(igg_match, igg_data)
+
+        skid_query = "https://skidrowreloadedcodex.com/?s=" + what
+        skid_data = retrieve_url(skid_query)
+        skid_match = re.compile('<h1\sclass="title"><a\shref="(.*?)"\stitle="(.*?)">')
+        skid_results = re.findall(skid_match,skid_data)
 
         for i in igg_results:
             self.printName(i[1] + " [IGG]", i[0])
         for i in cs_results:
             self.printName(i[1] + " [cs_rin]", "https://cs.rin.ru/forum" + i[0][1:])
+        for i in skid_results:
+            self.printName(i[1] + " [SkidrowReloadedCodex]", i[0])
 
     def printName(self, name, link):
         prettyPrinter({
