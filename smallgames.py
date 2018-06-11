@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#VERSION: 1.00
+#VERSION: 1.02
 #AUTHORS: hoanns
 #  small-games.info
 #  Not all results return a torrent file.
@@ -55,9 +55,10 @@ class smallgames(object):
         data = retrieve_url(query)
         match = re.compile('<a title=\"(.*?)\"\shref=\"/.*?i=(\d*).*?Скачать\sигру\s\((.{2,11})\)')
         results = match.findall(data)
+        name_clean = re.compile('[A-Za-z0-9].*')
 
         for res in results:
-            self.result['name'] = res[0]
+            self.result['name'] = name_clean.findall(res[0])[0]
             self.result['link'] = self.url + "getTorrent.php?direct=1&gid=" + res[1]
             self.result['desc_link'] = self.url + "?go=game&c=61&i=" + res[1]
             #  it always MB, and the M from the string is a weird russian one
