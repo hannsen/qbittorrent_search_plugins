@@ -22,9 +22,17 @@ if(fs.isFile(CookieJar))
 page.open("http://igg-games.com/?s=" + system.args[1] + "&=submit", function(status) {
     waitFor({
         interval: 100,
+        timeout: 45000,
         check: function () {
             return page.evaluate(function() {
-                return document.querySelector("#primary-content h1.title span.alt") ? true : false;
+                var titleFound = document.querySelector("#primary-content h1.title span.alt") ? true : false;
+
+                if(document.querySelector('h1.title'))
+                    var noFound = document.querySelector('h1.title').textContent == "Nothing found :(";
+                else
+                    var noFound = false;
+
+                return noFound || titleFound;
             });
         },
         success: function () {
@@ -46,7 +54,7 @@ function waitFor ($config) {
     if ($config.timeout && new Date - $config._start > $config.timeout) {
         if ($config.error) $config.error();
         if ($config.debug) console.log('timedout ' + (new Date - $config._start) + 'ms');
-        return;
+        phantom.exit();
     }
 
     if ($config.check()) {
