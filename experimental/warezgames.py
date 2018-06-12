@@ -1,5 +1,5 @@
-# VERSION: 0.4
-# AUTHORS: hoanns
+#VERSION: 0.4
+#AUTHORS: hoanns
 # getigg.js needs to be in nova2.py folder
 # doesnt work with qbit tho, only made to use with nova2.py
 # python 3 only
