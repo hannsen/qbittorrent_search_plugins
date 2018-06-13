@@ -49,7 +49,7 @@ class warezgames(object):
 
     def printName(self, name, link):
         prettyPrinter({
-            'name': name,
+            'name': name.strip(),
             'size': -1,
             'link': link,
             'desc_link': link,
