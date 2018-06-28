@@ -86,11 +86,12 @@ class jackett(object):
             else:
                 res['link'] = i['Link']
 
-            prettyPrinter(res)
+            # prettyPrinter(res)
 
     def get_response(self, query):
         try:
             response = urllib_request.urlopen(query).read()
+            print(response)
         except (HTTP_Error, URLError, ConnectionRefusedError):
             self.handle_error()
             quit()
