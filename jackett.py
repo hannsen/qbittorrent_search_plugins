@@ -18,11 +18,14 @@ try:
     from urllib import urlencode, quote, unquote
     import urllib2 as urllib_request
     from urllib2 import HTTPError as HTTP_Error
+    from urllib2 import URLError
+    from socket import error as ConnectionRefusedError
 except ImportError:
     # python3
     from urllib.parse import urlencode, quote, unquote
     from urllib import request as urllib_request
     from urllib.error import HTTPError as HTTP_Error
+    from urllib.error import URLError
 
 
 # noinspection PyPep8Naming
@@ -88,7 +91,7 @@ class jackett(object):
     def get_response(self, query):
         try:
             response = urllib_request.urlopen(query).read()
-        except HTTP_Error:
+        except (HTTP_Error, URLError, ConnectionRefusedError):
             self.handle_error()
             quit()
         # noinspection PyUnboundLocalVariable
