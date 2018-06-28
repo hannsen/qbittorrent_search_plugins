@@ -68,7 +68,13 @@ class jackett(object):
 
         response = self.get_response(base_url % params)
         j = json.loads(response)
+        print("json len " + str(len(j)))
+        print("json results len " + str(len(j['Results'])))
+        c = 0
         for i in j['Results']:
+            if c > 10:
+                return
+            c = c + 1
             res = dict(
                 size='%d B' % i['Size'],
                 seeds=i['Seeders'],
@@ -85,13 +91,12 @@ class jackett(object):
                 res['link'] = i['MagnetUri']
             else:
                 res['link'] = i['Link']
-
+            print(json.dumps(res))
             # prettyPrinter(res)
 
     def get_response(self, query):
         try:
             response = urllib_request.urlopen(query).read()
-            print(response)
         except (HTTP_Error, URLError, ConnectionRefusedError):
             self.handle_error()
             quit()
