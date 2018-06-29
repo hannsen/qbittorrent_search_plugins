@@ -1,4 +1,4 @@
-#VERSION: 1.08
+#VERSION: 1.10
 # AUTHORS: ukharley
 #          hannsen (github.com/hannsen)
 #
@@ -104,7 +104,7 @@ class jackett(object):
 
     def get_response(self, query):
         try:
-            response = urllib_request.urlopen(query).read()
+            response = urllib_request.urlopen(query).read().decode('utf-8')
         except (HTTP_Error, URLError, ConnectionRefusedError):
             self.handle_error()
             quit()
