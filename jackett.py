@@ -1,15 +1,19 @@
 #VERSION: 1.08
-#AUTHORS: ukharley
-#         hannsen (github.com/hannsen)
+# AUTHORS: ukharley
+#          hannsen (github.com/hannsen)
 #
-#         (Optional) Change your api key below
+#          (Optional) Change your api key below
+#
+#          If you have the jackett.json file in the same folder
+#          it will load your configuration from there, so you
+#          don't have to change it everytime there is an  update.
 
 user_data = {
     'url': 'http://127.0.0.1:9117',  # default, change to yours if different
     'api_key': 'YOUR_API_KEY_HERE',  # add your api key
     'tracker_first': False,  # (False/True) Add tracker name to beginning of search result
 }
-config_file = 'jackett_conf.json'
+config_file = 'jackett.json'
 
 import json
 from novaprinter import prettyPrinter
@@ -30,10 +34,9 @@ except ImportError:
     from urllib.error import URLError
 
 try:
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)) as fd:
-        config_data = json.load(fd)
-        properties = ['url', 'api_key', 'tracker_first']
-        for prop in properties:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)) as conf:
+        config_data = json.load(conf)
+        for prop in user_data.keys():
             if prop in config_data:
                 user_data[prop] = config_data[prop]
 except (IOError, ValueError) as e:
