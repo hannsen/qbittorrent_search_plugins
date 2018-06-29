@@ -1,4 +1,4 @@
-#VERSION: 1.07
+#VERSION: 1.08
 #AUTHORS: ukharley
 #         hannsen (github.com/hannsen)
 #
@@ -9,9 +9,11 @@ user_data = {
     'api_key': 'YOUR_API_KEY_HERE',  # add your api key
     'tracker_first': False,  # (False/True) Add tracker name to beginning of search result
 }
+config_file = 'jackett_conf.json'
 
 import json
 from novaprinter import prettyPrinter
+import os
 
 try:
     # python2
@@ -27,6 +29,15 @@ except ImportError:
     from urllib.error import HTTPError as HTTP_Error
     from urllib.error import URLError
 
+try:
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)) as fd:
+        config_data = json.load(fd)
+        properties = ['url', 'api_key', 'tracker_first']
+        for prop in properties:
+            if prop in config_data:
+                user_data[prop] = config_data[prop]
+except (IOError, ValueError) as e:
+    pass
 
 # noinspection PyPep8Naming
 class jackett(object):
