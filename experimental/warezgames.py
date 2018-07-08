@@ -1,4 +1,4 @@
-#VERSION: 0.4
+#VERSION: 0.5
 #AUTHORS: hoanns
 # getigg.js needs to be in nova2.py folder
 # doesnt work with qbit tho, only made to use with nova2.py
@@ -35,7 +35,7 @@ class warezgames(object):
         csrin_match = re.compile('<a\shref="(.*?)"\sclass="topictitle".*>(.*?)</a>')
         cs_results = re.findall(csrin_match, csrin_data)
 
-        skid_query = "https://skidrowreloadedcodex.com/?s=" + what.replace(' ', '+')
+        skid_query = "https://skidrowreloadedcodex.org/?s=" + what.replace(' ', '+')
         skid_data = retrieve_url(skid_query)
         skid_match = re.compile('<h1\sclass="title"><a\shref="(.*?)"\stitle="(.*?)">')
         skid_results = re.findall(skid_match, skid_data)
