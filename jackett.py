@@ -1,4 +1,4 @@
-#VERSION: 1.10
+#VERSION: 1.11
 # AUTHORS: ukharley
 #          hannsen (github.com/hannsen)
 #
@@ -25,6 +25,7 @@ try:
     import urllib2 as urllib_request
     from urllib2 import HTTPError as HTTP_Error
     from urllib2 import URLError
+    from cookielib import CookieJar
     from socket import error as ConnectionRefusedError
 except ImportError:
     # python3
@@ -32,6 +33,7 @@ except ImportError:
     from urllib import request as urllib_request
     from urllib.error import HTTPError as HTTP_Error
     from urllib.error import URLError
+    from http.cookiejar import CookieJar
 
 try:
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)) as conf:
@@ -41,6 +43,7 @@ try:
                 user_data[prop] = config_data[prop]
 except (IOError, ValueError) as e:
     pass
+
 
 # noinspection PyPep8Naming
 class jackett(object):
@@ -104,7 +107,9 @@ class jackett(object):
 
     def get_response(self, query):
         try:
-            response = urllib_request.urlopen(query).read().decode('utf-8')
+            cj = CookieJar()
+            opener = urllib_request.build_opener(urllib_request.HTTPCookieProcessor(cj))
+            response = opener.open(query).read().decode('utf-8')
         except (HTTP_Error, URLError, ConnectionRefusedError):
             self.handle_error()
             quit()
