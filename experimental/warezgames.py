@@ -1,4 +1,4 @@
-#VERSION: 0.5
+#VERSION: 0.6
 #AUTHORS: hoanns
 # getigg.js needs to be in nova2.py folder
 # doesnt work with qbit tho, only made to use with nova2.py
@@ -7,6 +7,7 @@
 
 import re
 import subprocess
+import base64
 
 from novaprinter import prettyPrinter
 from helpers import retrieve_url
@@ -45,18 +46,28 @@ class warezgames(object):
         for i in cs_results:
             self.printName(i[1] + " [cs_rin]", "https://cs.rin.ru/forum" + i[0][1:])
         for i in skid_results:
-            self.printName(i[1] + " [SkidrowReloadedCodex]", i[0])
+            self.printName(i[1] + " [SkidrowReloadedCodex]", i[0], self.getSkidDl(i[0]))
 
-    def printName(self, name, link):
+    def printName(self, name, desc_link, link=None):
+        link = link or desc_link
         prettyPrinter({
             'name': name.strip(),
             'size': -1,
             'link': link,
-            'desc_link': link,
+            'desc_link': desc_link,
             'seeds': -1,
             'leech': -1,
             'engine_url': self.url
         })
+
+    # store dl links somewhere, not useful for qbit searching
+    def getSkidDl(self, link):
+        try:
+            skid_dl_match = re.compile('<div style="text-align: center;"> <p><strong>MIRROR.*?</div><p>')
+            skid_data = retrieve_url(link)
+            return base64.b64encode(re.findall(skid_dl_match, skid_data)[0])
+        except:
+            return None
 
 
 if __name__ == "__main__":
