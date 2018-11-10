@@ -1,134 +1,159 @@
-#VERSION: 1.11
+#VERSION: 2.00
 # AUTHORS: ukharley
 #          hannsen (github.com/hannsen)
-#
-#          (Optional) Change your api key below
-#
-#          If you have the jackett.json file in the same folder
-#          it will load your configuration from there, so you
-#          don't have to change it everytime there is an  update.
-
-user_data = {
-    'url': 'http://127.0.0.1:9117',  # default, change to yours if different
-    'api_key': 'YOUR_API_KEY_HERE',  # add your api key
-    'tracker_first': False,  # (False/True) Add tracker name to beginning of search result
-}
-config_file = 'jackett.json'
+# CONTRIBUTORS: Diego de las Heras (ngosang@hotmail.es)
 
 import json
-from novaprinter import prettyPrinter
 import os
-
 try:
-    # python2
-    from urllib import urlencode, quote, unquote
-    import urllib2 as urllib_request
-    from urllib2 import HTTPError as HTTP_Error
-    from urllib2 import URLError
-    from cookielib import CookieJar
-    from socket import error as ConnectionRefusedError
-except ImportError:
     # python3
-    from urllib.parse import urlencode, quote, unquote
+    from urllib.parse import urlencode, unquote
     from urllib import request as urllib_request
-    from urllib.error import HTTPError as HTTP_Error
-    from urllib.error import URLError
     from http.cookiejar import CookieJar
+except ImportError:
+    # python2
+    from urllib import urlencode, unquote
+    import urllib2 as urllib_request
+    from cookielib import CookieJar
 
-try:
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)) as conf:
-        config_data = json.load(conf)
-        for prop in user_data.keys():
-            if prop in config_data:
-                user_data[prop] = config_data[prop]
-except (IOError, ValueError) as e:
-    pass
+# qBt
+from novaprinter import prettyPrinter
 
 
-# noinspection PyPep8Naming
+###############################################################################
+# load configuration from file
+CONFIG_FILE = 'jackett.json'
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), CONFIG_FILE)
+CONFIG_DATA = {
+    'api_key': 'YOUR_API_KEY_HERE',  # jackett api
+    'tracker_first': False,          # (False/True) add tracker name to beginning of search result
+    'url': 'http://127.0.0.1:9117',  # jackett url
+}
+
+
+def load_configuration():
+    global CONFIG_PATH, CONFIG_DATA
+    try:
+        # try to load user data from file
+        with open(CONFIG_PATH) as f:
+            CONFIG_DATA = json.load(f)
+    except ValueError:
+        # if file exists but it's malformed we load add a flag
+        CONFIG_DATA['malformed'] = True
+    except Exception:
+        # if file doesn't exist, we create it
+        with open(CONFIG_PATH, 'w') as f:
+            f.write(json.dumps(CONFIG_DATA, indent=4, sort_keys=True))
+
+    # do some checks
+    if any(item not in CONFIG_DATA for item in ['api_key', 'tracker_first', 'url']):
+        CONFIG_DATA['malformed'] = True
+
+
+load_configuration()
+###############################################################################
+
+
 class jackett(object):
-    """Generic provider for Torznab compatible api."""
-
-    what = ""
-    name = 'Jackett(torznab)'
-    url = user_data['url']
-    api_key = user_data['api_key']
+    name = 'Jackett'
+    url = CONFIG_DATA['url']
+    api_key = CONFIG_DATA['api_key']
     supported_categories = {
         'all': None,
+        'anime': ['5070'],
+        'books': ['8000'],
         'games': ['1000', '4000'],
         'movies': ['2000'],
         'music': ['3000'],
+        'software': ['4000'],
         'tv': ['5000'],
-        'books': ['8000']
     }
 
     def search(self, what, cat='all'):
         what = unquote(what)
-        self.what = what
-        cat = cat.lower()
-        base_url = self.url + "/api/v2.0/indexers/all/results?%s"
-        category = self.supported_categories[cat]
+        category = self.supported_categories[cat.lower()]
+
+        # check for malformed configuration
+        if 'malformed' in CONFIG_DATA:
+            self.handle_error("malformed configuration file", what)
+            return
 
         # user did not change api_key, trying to get from config
         if self.api_key == "YOUR_API_KEY_HERE":
             response = self.get_response(self.url + "/api/v2.0/server/config")
-            self.api_key = json.loads(response)['api_key']
+            if response is None:
+                self.handle_error("connection error", what)
+                return
+            try:
+                self.api_key = json.loads(response)['api_key']
+            except Exception:
+                # if login password is enabled we can't get the token
+                self.handle_error("api key error", what)
+                return
 
+        # prepare jackett url
         params = [
             ('apikey', self.api_key),
             ('Query', what)
         ]
-        if category:
+        if category is not None:
             for cat_id in category:
                 params.append(('Category[]', cat_id))
         params = urlencode(params)
+        jacket_url = self.url + "/api/v2.0/indexers/all/results?%s" % params
+        response = self.get_response(jacket_url)
+        if response is None:
+            self.handle_error("connection error", what)
+            return
 
-        response = self.get_response(base_url % params)
-        j = json.loads(response)
-        for i in j['Results']:
-            res = dict(
-                size='%d B' % i['Size'],
-                seeds=i['Seeders'],
-                leech=i['Peers'],
-                engine_url=self.url,
-                desc_link=i['Comments'])
+        # process search results
+        response_json = json.loads(response)
+        for result in response_json['Results']:
+            res = {
+                'size': '%d B' % result['Size'],
+                'seeds': result['Seeders'],
+                'leech': result['Peers'],
+                'engine_url': self.url,
+                'desc_link': result['Comments']
+            }
 
-            if user_data['tracker_first']:
-                res['name'] = '[%s] %s' % (i['Tracker'], i['Title'])
+            if CONFIG_DATA['tracker_first']:
+                res['name'] = '[%s] %s' % (result['Tracker'], result['Title'])
             else:
-                res['name'] = '%s [%s]' % (i['Title'], i['Tracker'])
+                res['name'] = '%s [%s]' % (result['Title'], result['Tracker'])
 
-            if i['MagnetUri']:
-                res['link'] = i['MagnetUri']
+            if result['MagnetUri']:
+                res['link'] = result['MagnetUri']
             else:
-                res['link'] = i['Link']
+                res['link'] = result['Link']
 
             prettyPrinter(res)
 
     def get_response(self, query):
+        response = None
         try:
-            cj = CookieJar()
-            opener = urllib_request.build_opener(urllib_request.HTTPCookieProcessor(cj))
+            # we can't use helpers.retrieve_url because of redirects
+            # we need the cookie processor to handle redirects
+            opener = urllib_request.build_opener(urllib_request.HTTPCookieProcessor(CookieJar()))
             response = opener.open(query).read().decode('utf-8')
-        except (HTTP_Error, URLError, ConnectionRefusedError):
-            self.handle_error()
-            quit()
-        # noinspection PyUnboundLocalVariable
+        except Exception:
+            pass
         return response
 
-    def handle_error(self):
-        error_msg = "Failure to connect to Jackett server! Please check API Key and URL / "
+    def handle_error(self, error_msg, what):
+        # we need to print the search text to be displayed in qBittorrent when
+        # 'Torrent names only' is enabled
         prettyPrinter({
             'seeds': -1,
             'size': -1,
             'leech': -1,
             'engine_url': self.url,
             'link': self.url,
-            'desc_link': self.url,
-            'name': error_msg + self.what
+            'desc_link': 'https://github.com/qbittorrent/search-plugins/wiki/How-to-configure-Jackett-plugin',  # noqa
+            'name': "Jackett: %s! Click 'Go to description' button to open help. Configuration file: '%s' Search: '%s'" % (error_msg, CONFIG_PATH, what)  # noqa
         })
 
 
 if __name__ == "__main__":
-    s = jackett()
-    s.search("harry potter", 'movies')
+    jackett_se = jackett()
+    jackett_se.search("harry potter", 'movies')
