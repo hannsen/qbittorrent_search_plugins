@@ -1,4 +1,4 @@
-#VERSION: 1.00
+#VERSION: 1.1
 #AUTHORS: hoanns
 # Chinese Gaming Site
 # Beware that they sometimes upload uncracked games on here.
@@ -10,6 +10,7 @@
 
 import re
 import threading
+import time
 # qBt
 from novaprinter import prettyPrinter
 from helpers import retrieve_url
@@ -24,7 +25,7 @@ class ali213(object):
     games_to_parse = 5
     # first size (e.g. 40.7G) then game page (e.g. arksurvivalevolved.html)
     result_page_match = re.compile(
-        '<span class="text">(.{2,7})</span></div><a href="/pcgame/(.*?)" target="_blank" class="list_body_con_down">')
+        '<p class="downAddress"><a href="http://down.ali213.net/pcgame/(.*?)" target="_blank">.*?<em>(.{2,7})</em>')
 
     supported_categories = {'all': True,
                             'games': True,
@@ -34,23 +35,29 @@ class ali213(object):
     final_dl_site = "http://btfile.soft5566.com/y/"
 
     def handle_gamepage(self, size_gamepage):
-        data = retrieve_url(self.url + 'pcgame/' + size_gamepage[1])
+        data = retrieve_url(self.url + 'pcgame/' + size_gamepage[0])
         down_url_match = re.compile('var downUrl ="/(.*?)"')
-        down_url = down_url_match.findall(data)
-        if down_url:
-            data = retrieve_url(self.first_dl_site + down_url[0])
+        url_key_soft50 = down_url_match.findall(data)
+        if url_key_soft50:
+            data = ''
+            tries = 0
+            while data == '' and tries < 20:
+                time.sleep(2)
+                data = retrieve_url(self.first_dl_site + url_key_soft50[0])
+                tries += 1
+
             down_url_match = re.compile('class="result_js" href="(.*?)" target="_blank">')
-            down_url = down_url_match.findall(data)
-            if down_url:
-                data = retrieve_url(down_url[0])
-                desc_site = down_url[0]
+            url_soft5566 = down_url_match.findall(data)
+            if url_soft5566:
+                data = retrieve_url(url_soft5566[0])
+                desc_site = url_soft5566[0]
                 down_url_match = re.compile('id="btbtn" href="' + self.final_dl_site + '(.*?)" target="_blank"')
-                down_url = down_url_match.findall(data)
-                if down_url:
+                url_torrent = down_url_match.findall(data)
+                if url_torrent:
                     result = {
-                        'name': down_url[0],
-                        'size': size_gamepage[0],
-                        'link': self.final_dl_site + down_url[0],
+                        'name': url_torrent[0],
+                        'size': size_gamepage[1],
+                        'link': self.final_dl_site + url_torrent[0],
                         'desc_link': desc_site,
                         'seeds': -1,
                         'leech': -1,
