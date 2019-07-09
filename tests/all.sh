@@ -2,10 +2,14 @@
 
 cd /app
 
-python ali213.py | grep ark
+echo TEST ali213
+python ali213.py | grep -e ark -e survival
 
-python demonoid.py | grep drive
+#offline
+#python demonoid.py | grep drive
 
+echo TEST smallgames
 python smallgames.py | grep ECO
 
-python threedm.py | grep Handball
+#offline
+#python threedm.py | grep Handball
