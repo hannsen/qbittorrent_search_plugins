@@ -1,0 +1,6 @@
+services:
+  - docker
+
+script:
+  - docker build -t hannsen/qbittorrent_search_plugins .
+  - docker run hannsen/qbittorrent_search_plugins python smallgames.py
