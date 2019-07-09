@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 cd /app
 
 echo TEST ali213
