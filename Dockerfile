@@ -11,5 +11,4 @@ RUN wget https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/se
 
 COPY . /app
 
-
-
+RUN chmod -R 777 /app/tests
