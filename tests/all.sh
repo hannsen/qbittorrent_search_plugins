@@ -1,4 +1,6 @@
-cd ..
+#!/bin/bash
+
+cd /app
 
 python ali213.py | grep ark
 
