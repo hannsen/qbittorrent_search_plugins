@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/hannsen/qbittorrent_search_plugins.svg?branch=master)](https://travis-ci.com/hannsen/qbittorrent_search_plugins)
+
+
 [Plugin list](https://github.com/qbittorrent/search-plugins/wiki/Unofficial-search-plugins)
 
 # qbit_search_plugins
