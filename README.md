@@ -15,16 +15,6 @@ looking for more torrent sites
   If you click the "Show description page" button, you will get additional non-torrent links.
   For more info open the file inside a text editor and read the first lines
 
-## ~~bt.3dmgame.com : threedm.py~~
-  ~~Chinese Gaming Website~~
-  REMOVED: OFFLINE
-
-## ~~demonoid.pw : demonoid.py~~
-  REMOVED: Semi-private, only shows newest torrents, not searchable as non logged-in user
-
-## ~~[Jackett](https://github.com/Jackett/Jackett) : jackett.py~~
-  REMOVED: is now included as a default search plugin
-
 ## small-games.info : smallgames.py
   Russian Gaming Website
   
@@ -32,3 +22,14 @@ looking for more torrent sites
   Click description button to see the game page for it.
   If there is a mediaget button, you can add &direct=1
   to its link to get the torrent file.
+
+## ~~bt.3dmgame.com : threedm.py~~
+  ~~Chinese Gaming Website~~
+  
+  REMOVED: OFFLINE
+
+## ~~demonoid.pw : demonoid.py~~
+  REMOVED: Semi-private, only shows newest torrents, not searchable as non logged-in user
+
+## ~~[Jackett](https://github.com/Jackett/Jackett) : jackett.py~~
+  REMOVED: is now included as a default search plugin
