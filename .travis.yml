@@ -3,6 +3,17 @@ language: python
 services:
   - docker
 
-script:
-  - docker build -t hannsen/qbittorrent_search_plugins .
-  - docker run hannsen/qbittorrent_search_plugins ./tests/all.sh
+jobs:
+  include:
+    - script:
+        - docker build -t hannsen/qbittorrent_search_plugins .
+        - docker run hannsen/qbittorrent_search_plugins ./tests/ali213.sh
+      name: "ali213"
+    - script:
+        - docker build -t hannsen/qbittorrent_search_plugins .
+        - docker run hannsen/qbittorrent_search_plugins ./tests/smallgames.sh
+      name: "smallgames"
+    - script:
+        - docker build -t hannsen/qbittorrent_search_plugins .
+        - docker run hannsen/qbittorrent_search_plugins ./tests/demonoid.sh
+      name: "demonoid"
