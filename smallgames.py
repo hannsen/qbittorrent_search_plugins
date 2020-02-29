@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-#VERSION: 1.02
-#AUTHORS: hoanns
+# VERSION: 1.03
+# AUTHORS: hoanns
 #  small-games.info
 #  Not all results return a torrent file.
 #  Click description button to see the game page for it.
@@ -9,8 +9,10 @@
 
 import os
 import re
+import ssl
 import tempfile
-import urllib.request
+
+from urllib.request import urlopen
 
 from helpers import retrieve_url
 # qBt
@@ -33,12 +35,7 @@ class smallgames(object):
         file, path = tempfile.mkstemp('.torrent')
         file = os.fdopen(file, "wb")
 
-        # Download url
-        req = urllib.request.Request(url)
-
-        response = urllib.request.urlopen(req)
-        dat = response.read()
-
+        dat = self.get_url(url)
         data = dat.decode('utf-8', 'replace')
         if data == 'No link found!' or data == 'some error':
             return None
@@ -50,9 +47,8 @@ class smallgames(object):
             print(path + " " + url)
 
     def search(self, what, cat='all'):
-
-        query = "http://small-games.info/?go=search&go=search&search_text=" + what
-        data = retrieve_url(query)
+        query = "https://small-games.info/?go=search&go=search&search_text=" + what
+        data = self.get_url(query).decode('utf-8', 'replace')
         match = re.compile('<a title=\"(.*?)\"\shref=\"/.*?i=(\d*).*?Скачать\sигру\s\((.{2,11})\)')
         results = match.findall(data)
         name_clean = re.compile('[A-Za-z0-9].*')
@@ -65,6 +61,11 @@ class smallgames(object):
             #  so pretty printer will not recognize it
             self.result['size'] = res[2][:-3] + 'MB'
             prettyPrinter(self.result)
+
+    @staticmethod
+    def get_url(url):
+        context = ssl._create_unverified_context()
+        return urlopen(url, context=context).read()
 
 
 if __name__ == "__main__":
