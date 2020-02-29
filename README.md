@@ -16,16 +16,14 @@ looking for more torrent sites
   For more info open the file inside a text editor and read the first lines
 
 ## ~~bt.3dmgame.com : threedm.py~~
-  Chinese Gaming Website
-
-  OFFLINE
+  ~~Chinese Gaming Website~~
+  REMOVED: OFFLINE
 
 ## ~~demonoid.pw : demonoid.py~~
-  
-  Semi-private, only shows newest torrents, not searchable as non logged-in user
+  REMOVED: Semi-private, only shows newest torrents, not searchable as non logged-in user
 
 ## ~~[Jackett](https://github.com/Jackett/Jackett) : jackett.py~~
-  REMOVED, is now included as a default search plugin
+  REMOVED: is now included as a default search plugin
 
 ## small-games.info : smallgames.py
   Russian Gaming Website
