@@ -13,7 +13,3 @@ jobs:
         - docker build -t hannsen/qbittorrent_search_plugins .
         - docker run hannsen/qbittorrent_search_plugins ./tests/smallgames.sh
       name: "smallgames"
-    - script:
-        - docker build -t hannsen/qbittorrent_search_plugins .
-        - docker run hannsen/qbittorrent_search_plugins ./tests/demonoid.sh
-      name: "demonoid"
