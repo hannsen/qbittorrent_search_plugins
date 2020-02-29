@@ -6,8 +6,6 @@
 # qbit_search_plugins
 Don't blame me if these run slow, it has to use chinese servers
 
-looking for more torrent sites
-
 ## ali213.net : ali213.py
   Chinese Gaming Website
 
